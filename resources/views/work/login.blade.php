@@ -10,27 +10,23 @@
     <div class="container vh-100 d-flex justify-content-center align-items-center">
         <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
             <h3 class="text-center mb-4">Login</h3>
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
             <form action="{{ route('loginuser') }}" method="POST">
                 @csrf
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" value="{{ old('email') }}" >
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Enter your email" value="{{ old('email') }}" >
+                    @error('email')
+                        <div class="invalid-feedback">{{ $error }}</div>
+                    @enderror
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" >
+                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Enter your password" >
+                    @error('password')
+                        <div class="invalid-feedback">{{ $error }}</div>
+                    @enderror
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Login</button>
-                
             </form>
             <br>
             <a href="{{route('register')}}"><button type="submit" class="btn btn-primary">register</button></a>

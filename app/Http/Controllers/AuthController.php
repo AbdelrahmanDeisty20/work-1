@@ -46,9 +46,9 @@ class AuthController extends Controller
         ]);
         $user = User::where('email', $validatedData['email'])->first();
         if (!$user || !Hash::check($validatedData['password'], $user->password)) {
-            
-
-            return back();
+            return back()->withErrors([
+                'email' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+            ])->withInput();
         }
         Auth::login($user);
 
