@@ -45,9 +45,16 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
         $user = User::where('email', $validatedData['email'])->first();
-        if (!$user || !Hash::check($validatedData['password'], $user->password)) {
+        
+        if (!$user) {
             return back()->withErrors([
-                'email' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+                'email' => 'هذا البريد الإلكتروني غير مسجل لدينا.',
+            ])->withInput();
+        }
+
+        if (!Hash::check($validatedData['password'], $user->password)) {
+            return back()->withErrors([
+                'password' => 'كلمة المرور غير صحيحة.',
             ])->withInput();
         }
         Auth::login($user);
