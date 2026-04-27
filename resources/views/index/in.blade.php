@@ -61,6 +61,17 @@
                 </div>
             </div>
         </div>
+
+        <!-- عدد العملاء -->
+        <div class="col-md-12">
+            <div class="card text-white bg-dark shadow rounded-4">
+                <div class="card-body text-center">
+                    <h1>💳</h1>
+                    <h5 class="card-title">إجمالي العملاء</h5>
+                    <p class="card-text fs-4">{{ $allCustomers }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

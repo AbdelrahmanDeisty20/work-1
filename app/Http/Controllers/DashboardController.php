@@ -24,6 +24,7 @@ class DashboardController extends Controller
         $allEmployees = Employee::count();
         $allCategories = Category::count();
         $allGovernorates = Governorate::count();
+        $allCustomers = \App\Models\Customer::count();
         
         // الاشتراكات المنتهية
         $expiredEmployeesCount = Employee::whereHas('dates', function ($query) use ($today) {
@@ -49,7 +50,8 @@ class DashboardController extends Controller
             'allGovernorates',
             'expiringInOneWeek',
             'expiredEmployeesCount',
-            'activeEmployeesCount'
+            'activeEmployeesCount',
+            'allCustomers'
         ));
     }
 
