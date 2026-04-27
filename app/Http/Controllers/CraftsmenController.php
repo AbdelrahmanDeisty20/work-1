@@ -2,190 +2,186 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\storecraftsmen;
+use App\Http\Requests\updateCraftsmen;
+use App\Models\Category;
+use App\Models\Date;
 use App\Models\Employee;
+use App\Models\Governorate;
+use App\Models\User;
 use App\Notifications\DateIsEnd;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Requests\storecraftsmen;
-use App\Http\Requests\updateCraftsmen;
-use App\Models\Governorate;
-use App\Models\Category;
-use App\Models\Date;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;         
+use Illuminate\Support\Facades\DB;
 use Auth;
-
-
 
 class CraftsmenController extends Controller
 {
     public function index(Request $request)
     {
         $search = $request->query('search');
-        
+
         $craftsmens = Employee::with('category', 'governorate')
             ->when($search, function ($query, $search) {
-                $query->where('name', 'LIKE', "%{$search}%")
+                $query
+                    ->where('name', 'LIKE', "%{$search}%")
                     ->orWhereHas('category', function ($q) use ($search) {
                         $q->where('name', 'LIKE', "%{$search}%");
                     });
-                })
-                ->get();
-                return view('work.index', compact('craftsmens'));
-            
-            
-        
+            })
+            ->get();
+        return view('work.index', compact('craftsmens'));
     }
-//_______________________________________________________________________________________________________________
+
+    // _______________________________________________________________________________________________________________
     public function create()
     {
-        $Governorates=Governorate::all();
-        $Categories=Category::all();
-        return view('work.create',compact('Governorates','Categories'));
-    }
-//_______________________________________________________________________________________________________________
-public function store(storecraftsmen $request)
-{
-    // Validate the request data
-    $validatedData = $request->validated();
-
-    // Handle image uploads
-    if ($request->hasFile('image')) {
-        $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
-        $request->file('image')->move(public_path('images/employees'), $imageName);
-        $validatedData['image'] = 'images/employees/' . $imageName;
+        $Governorates = Governorate::all();
+        $Categories = Category::all();
+        $date = Date::all();
+        return view('work.create', compact('Governorates', 'Categories', 'date'));
     }
 
-    if ($request->hasFile('imageA')) {
-        $imageAName = time() . '_' . $request->file('imageA')->getClientOriginalName();
-        $request->file('imageA')->move(public_path('images/employees'), $imageAName);
-        $validatedData['imageA'] = 'images/employees/' . $imageAName;
-    }
-
-    if ($request->hasFile('imageB')) {
-        $imageBName = time() . '_' . $request->file('imageB')->getClientOriginalName();
-        $request->file('imageB')->move(public_path('images/employees'), $imageBName);
-        $validatedData['imageB'] = 'images/employees/' . $imageBName;
-    }
-
-
-    // حفظ بيانات الموظف
-    $employee = Employee::create($validatedData);
-
-    // حساب تاريخ الانتهاء بناءً على تاريخ الاشتراك
-    $startDate = Carbon::parse($validatedData['startDate']);
-    $endDate = $startDate->copy()->addMonth();
-
-    // حفظ التاريخ
-    $employee->dates()->create([
-        'startDate' => $startDate->format('Y-m-d'),
-        'endDate' => $endDate->format('Y-m-d'),
-    ]);
-
-    return redirect()->route('index'); 
-    } 
-
-
-
-//_______________________________________________________________________________________________________________
-    public function show(string $id)
+    // _______________________________________________________________________________________________________________
+    public function store(storecraftsmen $request)
     {
-        $craftsman=Employee::with(['Category:id,name','Governorate:id,name', 'dates'])->findOrFail($id);
-        return view('work.show', compact('craftsman'));
-        
-    }
-//_______________________________________________________________________________________________________________
-    public function edit(string $id)
-    {
-        $craftsman=Employee::with(['Category','Governorate','dates'])->findOrFail($id);
-        $Governorates=Governorate::all();
-        $Categories=Category::all();
-        return view('work.edit', compact('craftsman','Governorates','Categories'));
-    }
-//_______________________________________________________________________________________________________________
-public function update(updateCraftsmen $request, string $id)
-{
-    $validatedData = $request->validated();
-    $craftsman = Employee::findOrFail($id);
+        // Validate the request data
+        $validatedData = $request->validated();
 
-    if ($request->hasFile('image')) {
-        $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
-        $path = $request->file('image')->move(public_path('images/employees'), $imageName);
-        $validatedData['image'] = 'images/employees/' . $imageName;
-    }
+        // Handle image uploads
+        if ($request->hasFile('image')) {
+            $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
+            $request->file('image')->move(public_path('images/employees'), $imageName);
+            $validatedData['image'] = 'images/employees/' . $imageName;
+        }
 
-    if ($request->hasFile('imageA')) {
-        $imageAName = time() . '_A_' . $request->file('imageA')->getClientOriginalName();
-        $path = $request->file('imageA')->move(public_path('images/employees'), $imageAName);
-        $validatedData['imageA'] = 'images/employees/' . $imageAName;
-    }
+        if ($request->hasFile('imageA')) {
+            $imageAName = time() . '_' . $request->file('imageA')->getClientOriginalName();
+            $request->file('imageA')->move(public_path('images/employees'), $imageAName);
+            $validatedData['imageA'] = 'images/employees/' . $imageAName;
+        }
 
-    if ($request->hasFile('imageB')) {
-        $imageBName = time() . '_B_' . $request->file('imageB')->getClientOriginalName();
-        $path = $request->file('imageB')->move(public_path('images/employees'), $imageBName);
-        $validatedData['imageB'] = 'images/employees/' . $imageBName;
-    }
- // تحديث بيانات الموظف (بدون التاريخ)
-$craftsman->update($validatedData);
+        if ($request->hasFile('imageB')) {
+            $imageBName = time() . '_' . $request->file('imageB')->getClientOriginalName();
+            $request->file('imageB')->move(public_path('images/employees'), $imageBName);
+            $validatedData['imageB'] = 'images/employees/' . $imageBName;
+        }
 
- // تحديث التاريخ إن وجد
-if (isset($validatedData['startDate'])) {
-    $startDate = Carbon::parse($validatedData['startDate']);
-    $endDate = $startDate->copy()->addMonth();
+        // حفظ بيانات الموظف
+        $employee = Employee::create($validatedData);
 
-     // تحديث أول تاريخ مرتبط بالموظف
-    $date = $craftsman->dates()->first();
-    if ($date) {
-        $date->update([
+        // حساب تاريخ الانتهاء بناءً على تاريخ الاشتراك
+        $startDate = Carbon::parse($validatedData['startDate']);
+        $endDate = $startDate->copy()->addMonth();
+
+        // حفظ التاريخ
+        $employee->dates()->create([
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y-m-d'),
         ]);
+
+        return redirect()->route('index');
     }
-}
 
-    return redirect()->route('index');
-}
+    // _______________________________________________________________________________________________________________
+    public function show(string $id)
+    {
+        $craftsman = Employee::with(['Category:id,name', 'Governorate:id,name', 'dates'])->findOrFail($id);
+        return view('work.show', compact('craftsman'));
+    }
 
-//_______________________________________________________________________________________________________________
-public function destroy(string $id)
-{
-    $craftsman = Employee::findOrFail($id);
-    
-    // حذف السجلات المرتبطة يدويًا
-    $craftsman->dates()->delete();
-    
-    $craftsman->delete();
+    // _______________________________________________________________________________________________________________
+    public function edit(string $id)
+    {
+        $craftsman = Employee::with(['Category', 'Governorate', 'dates'])->findOrFail($id);
+        $Governorates = Governorate::all();
+        $Categories = Category::all();
+        return view('work.edit', compact('craftsman', 'Governorates', 'Categories'));
+    }
 
-    return redirect()->route('index')->with('success', 'تم حذف الموظف بنجاح.');
-}
-//_______________________________________________________________________________________________________________
+    // _______________________________________________________________________________________________________________
+    public function update(updateCraftsmen $request, string $id)
+    {
+        $validatedData = $request->validated();
+        $craftsman = Employee::findOrFail($id);
 
+        if ($request->hasFile('image')) {
+            $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
+            $path = $request->file('image')->move(public_path('images/employees'), $imageName);
+            $validatedData['image'] = 'images/employees/' . $imageName;
+        }
 
-public function indexph(string $id){
+        if ($request->hasFile('imageA')) {
+            $imageAName = time() . '_A_' . $request->file('imageA')->getClientOriginalName();
+            $path = $request->file('imageA')->move(public_path('images/employees'), $imageAName);
+            $validatedData['imageA'] = 'images/employees/' . $imageAName;
+        }
 
-    $craftsman=Employee::with(['Category:id,name','Governorate:id,name'])->findOrFail($id);
-    return view('index.allph', compact('craftsman'));
+        if ($request->hasFile('imageB')) {
+            $imageBName = time() . '_B_' . $request->file('imageB')->getClientOriginalName();
+            $path = $request->file('imageB')->move(public_path('images/employees'), $imageBName);
+            $validatedData['imageB'] = 'images/employees/' . $imageBName;
+        }
+        // تحديث بيانات الموظف (بدون التاريخ)
+        $craftsman->update($validatedData);
 
-}
+        // تحديث التاريخ إن وجد
+        if (isset($validatedData['startDate'])) {
+            $startDate = Carbon::parse($validatedData['startDate']);
+            $endDate = $startDate->copy()->addMonth();
 
-//_______________________________________________________________________________________________________________
-public function subscriptionHistory($id)
-{
-    $craftsman = Employee::findOrFail($id);
-    $today = \Carbon\Carbon::today()->format('Y-m-d');
+            // تحديث أول تاريخ مرتبط بالموظف
+            $date = $craftsman->dates()->first();
+            if ($date) {
+                $date->update([
+                    'starDate' => $startDate->format('Y-m-d'),
+                    'endDate' => $endDate->format('Y-m-d'),
+                ]);
+            }
+        }
 
-    // جلب كل التواريخ
-    $subscriptions = $craftsman->dates ?? [];
+        return redirect()->route('index');
+    }
 
-    // جلب الاشتراك الحالي (اللي endDate أكبر من أو يساوي اليوم)
-    $currentSubscription = $craftsman->dates()
-        ->where('endDate', '>=', $today)
-        ->orderBy('endDate', 'asc') // عشان تجيب أقرب اشتراك حالي
-        ->first();
+    // _______________________________________________________________________________________________________________
+    public function destroy(string $id)
+    {
+        $craftsman = Employee::findOrFail($id);
 
-    return view('index.history', compact('craftsman', 'subscriptions', 'currentSubscription'));
-}
-//_______________________________________________________________________________________________________________
+        // حذف السجلات المرتبطة يدويًا
+        $craftsman->dates()->delete();
 
+        $craftsman->delete();
 
+        return redirect()->route('index')->with('success', 'تم حذف الموظف بنجاح.');
+    }
+
+    // _______________________________________________________________________________________________________________
+
+    public function indexph(string $id)
+    {
+        $craftsman = Employee::with(['Category:id,name', 'Governorate:id,name'])->findOrFail($id);
+        return view('index.allph', compact('craftsman'));
+    }
+
+    // _______________________________________________________________________________________________________________
+    public function subscriptionHistory($id)
+    {
+        $craftsman = Employee::findOrFail($id);
+        $today = \Carbon\Carbon::today()->format('Y-m-d');
+
+        // جلب كل التواريخ
+        $subscriptions = $craftsman->dates ?? [];
+
+        // جلب الاشتراك الحالي (اللي endDate أكبر من أو يساوي اليوم)
+        $currentSubscription = $craftsman
+            ->dates()
+            ->where('endDate', '>=', $today)
+            ->orderBy('endDate', 'asc')  // عشان تجيب أقرب اشتراك حالي
+            ->first();
+
+        return view('index.history', compact('craftsman', 'subscriptions', 'currentSubscription'));
+    }
+
+    // _______________________________________________________________________________________________________________
 }
