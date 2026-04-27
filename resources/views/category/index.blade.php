@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Index</title>
+    <title>الحرف</title>
 
     <!-- Search Form -->
     <form method="GET" action="{{ route('index') }}" class="d-flex justify-content-center mb-4">
@@ -15,7 +15,7 @@
         <div class="input-group" style="width: 60%;">
             <input type="text" name="search" class="form-control" placeholder="ابحث عن الحرفه أو اسم الحرفي" value="{{ request('search') }}">
             <button class="btn btn-primary" type="submit">
-                <i class="fas fa-search"></i> Search
+                <i class="fas fa-search"></i> بحث
             </button>
         </div>
     </form>
