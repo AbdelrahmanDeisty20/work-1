@@ -1,5 +1,4 @@
-
-    @extends('layout.tmp')
+@extends('layout.tmp')
     @section('title', 'إضافة صاحب حرفة')
     
     @section('conntent')
