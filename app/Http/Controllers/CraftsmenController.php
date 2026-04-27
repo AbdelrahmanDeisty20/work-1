@@ -41,8 +41,7 @@ class CraftsmenController extends Controller
     {
         $Governorates=Governorate::all();
         $Categories=Category::all();
-        $date=Date::all();
-        return view('work.create',compact('Governorates','Categories','date'));
+        return view('work.create',compact('Governorates','Categories'));
     }
 //_______________________________________________________________________________________________________________
 public function store(storecraftsmen $request)
@@ -138,7 +137,7 @@ if (isset($validatedData['startDate'])) {
     $date = $craftsman->dates()->first();
     if ($date) {
         $date->update([
-            'starDate' => $startDate->format('Y-m-d'),
+            'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y-m-d'),
         ]);
     }

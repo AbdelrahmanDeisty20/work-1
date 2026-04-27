@@ -115,10 +115,10 @@
     
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <div id="progressContainer" class="d-none mt-3">
-        <div class="progress">
-            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0%</div>
+        <div class="progress" style="height: 25px;">
+            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%">0%</div>
         </div>
-        <p class="text-center mt-2" id="progressStatus">جاري معالجة الصور...</p>
+        <p class="text-center mt-2 fw-bold" id="progressStatus">جاري معالجة البيانات...</p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -147,13 +147,13 @@
                 for (const inputName of imageInputs) {
                     const fileInput = document.getElementById(inputName);
                     if (fileInput && fileInput.files[0]) {
-                        progressStatus.innerText = `جاري ضغط صورة ${inputName}...`;
+                        progressStatus.innerText = `جاري ضغط الصور لسرعة الرفع...`;
                         const compressedBlob = await compressImage(fileInput.files[0]);
                         formData.set(inputName, compressedBlob, fileInput.files[0].name);
                     }
                 }
 
-                progressStatus.innerText = 'جاري الرفع...';
+                progressStatus.innerText = 'جاري الرفع الآن...';
                 
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', form.action, true);
@@ -173,7 +173,7 @@
                     } else {
                         btn.disabled = false;
                         progressContainer.classList.add('d-none');
-                        alert('حدث خطأ أثناء الحفظ. يرجى التأكد من البيانات.');
+                        alert('حدث خطأ أثناء الحفظ. يرجى التأكد من البيانات أو حجم الصور.');
                     }
                 };
 
@@ -191,10 +191,8 @@
                             const canvas = document.createElement('canvas');
                             let width = img.width;
                             let height = img.height;
-                            
-                            // Max dimensions
-                            const MAX_WIDTH = 1200;
-                            const MAX_HEIGHT = 1200;
+                            const MAX_WIDTH = 1000; // صغرنا الحجم أكتر للسرعة
+                            const MAX_HEIGHT = 1000;
 
                             if (width > height) {
                                 if (width > MAX_WIDTH) {
@@ -212,10 +210,7 @@
                             canvas.height = height;
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0, width, height);
-                            
-                            canvas.toBlob((blob) => {
-                                resolve(blob);
-                            }, 'image/jpeg', 0.7); // 70% quality
+                            canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.6); // جودة 60% ممتازة جداً للموبايل
                         };
                     };
                 });
