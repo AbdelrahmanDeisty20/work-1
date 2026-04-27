@@ -11,7 +11,7 @@ class Governorate extends Model
     protected $fillable = ['name'];
 
     public function craftsmen(){
-        return $this->belongsTo(Employee::class);
+        return $this->hasMany(Employee::class, 'governorates_id');
     }
 
 

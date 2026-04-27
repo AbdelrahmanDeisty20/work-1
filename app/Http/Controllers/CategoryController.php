@@ -76,38 +76,41 @@ public function create_cr(string $id)
 //_____________________________________________________________________________________________________
 
 //_______________________________________________________________________________________________________________
-public function store_cr(storecraftsmen $request)
-{
-    $validatedData = $request->validated();
- // تخزين الصور إذا كانت موجودة
- if ($request->hasFile('image')) {
-    $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
-    $request->file('image')->move(public_path('images/employees'), $imageName);
-    $validatedData['image'] = 'images/employees/' . $imageName;
-}
+    public function store_cr(storecraftsmen $request)
+    {
+        $validatedData = $request->validated();
 
-if ($request->hasFile('imageA')) {
-    $imageAName = time() . '_' . $request->file('imageA')->getClientOriginalName();
-    $request->file('imageA')->move(public_path('images/employees'), $imageAName);
-    $validatedData['imageA'] = 'images/employees/' . $imageAName;
-}
+        if ($request->hasFile('image')) {
+            $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
+            $request->file('image')->move(public_path('images/employees'), $imageName);
+            $validatedData['image'] = 'images/employees/' . $imageName;
+        }
 
-if ($request->hasFile('imageB')) {
-    $imageBName = time() . '_' . $request->file('imageB')->getClientOriginalName();
-    $request->file('imageB')->move(public_path('images/employees'), $imageBName);
-    $validatedData['imageB'] = 'images/employees/' . $imageBName;
-}
+        if ($request->hasFile('imageA')) {
+            $imageAName = time() . '_' . $request->file('imageA')->getClientOriginalName();
+            $request->file('imageA')->move(public_path('images/employees'), $imageAName);
+            $validatedData['imageA'] = 'images/employees/' . $imageAName;
+        }
 
+        if ($request->hasFile('imageB')) {
+            $imageBName = time() . '_' . $request->file('imageB')->getClientOriginalName();
+            $request->file('imageB')->move(public_path('images/employees'), $imageBName);
+            $validatedData['imageB'] = 'images/employees/' . $imageBName;
+        }
 
-    $startDate = \Carbon\Carbon::parse($validatedData['startDate']);
-    $endDate = $startDate->addMonth(); 
-    $validatedData['EndDate'] = $endDate->format('Y-m-d');
+        $craftsman = Employee::create($validatedData);
 
-    $craftsman = Employee::create($validatedData);
+        $startDate = \Carbon\Carbon::parse($validatedData['startDate']);
+        $endDate = $startDate->copy()->addMonth();
 
-    return redirect()->route('category.show', ['id' => $craftsman->category_id])
-    ->with('success', 'تم تحديث البيانات بنجاح!');
-}
+        $craftsman->dates()->create([
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d'),
+        ]);
+
+        return redirect()->route('category.show', ['id' => $craftsman->category_id])
+            ->with('success', 'تم إضافة البيانات بنجاح!');
+    }
 //_____________________________________________________________________________________________________
 
 //_______________________________________________________________________________________________________________
@@ -119,40 +122,47 @@ public function edit_cr(string $id)
     return view('category.editt', compact('craftsman','Governorates','Categories'));
 }
 //_______________________________________________________________________________________________________________
-public function update_cr(updateCraftsmen $request, string $id)
-{
-    $validatedData = $request->validated();
-    $craftsman = Employee::findOrFail($id);
+    public function update_cr(updateCraftsmen $request, string $id)
+    {
+        $validatedData = $request->validated();
+        $craftsman = Employee::findOrFail($id);
 
-    if ($request->hasFile('image')) {
-        $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
-        $path = $request->file('image')->move(public_path('images/employees'), $imageName);
-        $validatedData['image'] = 'images/employees/' . $imageName;
+        if ($request->hasFile('image')) {
+            $imageName = time() . '_' . $request->file('image')->getClientOriginalName();
+            $request->file('image')->move(public_path('images/employees'), $imageName);
+            $validatedData['image'] = 'images/employees/' . $imageName;
+        }
+
+        if ($request->hasFile('imageA')) {
+            $imageAName = time() . '_A_' . $request->file('imageA')->getClientOriginalName();
+            $request->file('imageA')->move(public_path('images/employees'), $imageAName);
+            $validatedData['imageA'] = 'images/employees/' . $imageAName;
+        }
+
+        if ($request->hasFile('imageB')) {
+            $imageBName = time() . '_B_' . $request->file('imageB')->getClientOriginalName();
+            $request->file('imageB')->move(public_path('images/employees'), $imageBName);
+            $validatedData['imageB'] = 'images/employees/' . $imageBName;
+        }
+
+        $craftsman->update($validatedData);
+
+        if (isset($validatedData['startDate'])) {
+            $startDate = \Carbon\Carbon::parse($validatedData['startDate']);
+            $endDate = $startDate->copy()->addMonth();
+
+            $date = $craftsman->dates()->first();
+            if ($date) {
+                $date->update([
+                    'startDate' => $startDate->format('Y-m-d'),
+                    'endDate' => $endDate->format('Y-m-d'),
+                ]);
+            }
+        }
+
+        return redirect()->route('category.show', ['id' => $craftsman->category_id])
+            ->with('success', 'تم تحديث البيانات بنجاح!');
     }
-
-    if ($request->hasFile('imageA')) {
-        $imageAName = time() . '_A_' . $request->file('imageA')->getClientOriginalName();
-        $path = $request->file('imageA')->move(public_path('images/employees'), $imageAName);
-        $validatedData['imageA'] = 'images/employees/' . $imageAName;
-    }
-
-    if ($request->hasFile('imageB')) {
-        $imageBName = time() . '_B_' . $request->file('imageB')->getClientOriginalName();
-        $path = $request->file('imageB')->move(public_path('images/employees'), $imageBName);
-        $validatedData['imageB'] = 'images/employees/' . $imageBName;
-    }
-
-
-    $startDate = \Carbon\Carbon::parse($validatedData['startDate']);
-    $endDate = $startDate->addMonth();
-    $validatedData['EndDate'] = $endDate->format('Y-m-d');
-
-    $craftsman->update($validatedData);
-
-    // Redirect with the required 'id' parameter
-    return redirect()->route('category.show', ['id' => $craftsman->category_id])
-        ->with('success', 'تم تحديث البيانات بنجاح!');
-}
 
 
 //_______________________________________________________________________________________________________________
@@ -164,5 +174,10 @@ public function destroy_cr(string $id)
    
     
 }
-//_______________________________________________________________________________________________________________
+    public function destroy(string $id)
+    {
+        $category = Category::findOrFail($id);
+        $category->delete();
+        return redirect()->route('index_category')->with('success', 'تم حذف الفئة بنجاح.');
+    }
 }

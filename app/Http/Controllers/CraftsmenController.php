@@ -38,8 +38,7 @@ class CraftsmenController extends Controller
     {
         $Governorates = Governorate::all();
         $Categories = Category::all();
-        $date = Date::all();
-        return view('work.create', compact('Governorates', 'Categories', 'date'));
+        return view('work.create', compact('Governorates', 'Categories'));
     }
 
     // _______________________________________________________________________________________________________________
@@ -134,7 +133,7 @@ class CraftsmenController extends Controller
             $date = $craftsman->dates()->first();
             if ($date) {
                 $date->update([
-                    'starDate' => $startDate->format('Y-m-d'),
+                    'startDate' => $startDate->format('Y-m-d'),
                     'endDate' => $endDate->format('Y-m-d'),
                 ]);
             }

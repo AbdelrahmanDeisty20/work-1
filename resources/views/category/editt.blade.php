@@ -58,10 +58,10 @@
                 <input type="text" class="form-control" id="NationalNumber" name="NationalNumber" placeholder="أدخل الرقم القومي" value="{{ $craftsman->NationalNumber }}">
             </div>
 
-            {{-- <div class="mb-3">
-                <label for="startDate" class="form-label" style="font-size: 25px;">تاريخ البدء</label>
-                <input type="date" class="form-control" id="startDate" name="startDate" value="{{ $craftsman->startDate }}">
-            </div> --}}
+            <div class="mb-3">
+                <label for="startDate" class="form-label" style="font-size: 25px;">تاريخ الاشتراك</label>
+                <input type="text" class="form-control" id="startDate" name="startDate" value="{{ $craftsman->dates()->first() ? $craftsman->dates()->first()->startDate : '' }}">
+            </div>
             <div class="mb-3">
                 <label for="image" class="form-label" style="font-size: 25px;">الصورة الحالية</label>
                 @if($craftsman->image)
@@ -114,18 +114,112 @@
             @enderror
         </div>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">تعديل</button>
+            <div id="progressContainer" class="d-none mt-3">
+                <div class="progress" style="height: 25px;">
+                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%">0%</div>
+                </div>
+                <p class="text-center mt-2 fw-bold" id="progressStatus">جاري معالجة البيانات...</p>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg px-5">حفظ التعديلات</button>
             </div>
         </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script>
-    
-    flatpickr("#startDate", {
-        dateFormat: "Y-m-d", 
-        minDate: "today"     
-    });
-</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("#startDate", {
+                dateFormat: "Y-m-d"
+            });
+
+            const form = document.querySelector('form');
+            const btn = document.querySelector('button[type="submit"]');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressStatus = document.getElementById('progressStatus');
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                btn.disabled = true;
+                progressContainer.classList.remove('d-none');
+                
+                const formData = new FormData(form);
+                const imageInputs = ['image', 'imageA', 'imageB'];
+                
+                for (const inputName of imageInputs) {
+                    const fileInput = document.getElementById(inputName);
+                    if (fileInput && fileInput.files[0]) {
+                        progressStatus.innerText = `جاري ضغط الصور...`;
+                        const compressedBlob = await compressImage(fileInput.files[0]);
+                        formData.set(inputName, compressedBlob, fileInput.files[0].name);
+                    }
+                }
+
+                progressStatus.innerText = 'جاري حفظ التعديلات الآن...';
+                
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', form.action, true);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = percent + '%';
+                        progressBar.innerText = percent + '%';
+                    }
+                };
+
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        window.location.href = "{{ route('category.show', ['id' => $craftsman->category_id]) }}";
+                    } else {
+                        btn.disabled = false;
+                        progressContainer.classList.add('d-none');
+                        alert('حدث خطأ أثناء الحفظ. يرجى التأكد من البيانات أو حجم الصور.');
+                    }
+                };
+
+                xhr.send(formData);
+            });
+
+            async function compressImage(file) {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.src = event.target.result;
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
+                            const MAX_WIDTH = 1000;
+                            const MAX_HEIGHT = 1000;
+
+                            if (width > height) {
+                                if (width > MAX_WIDTH) {
+                                    height *= MAX_WIDTH / width;
+                                    width = MAX_WIDTH;
+                                }
+                            } else {
+                                if (height > MAX_HEIGHT) {
+                                    width *= MAX_HEIGHT / height;
+                                    height = MAX_HEIGHT;
+                                }
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+                            canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.6);
+                        };
+                    };
+                });
+            }
+        });
+    </script>
 
 @endsection

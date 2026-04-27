@@ -41,8 +41,9 @@
                     
                     <td style="border: 2px solid black;">
                         <a href="{{ route('category.show', [$all->id]) }}">
-                            <button class="btn btn-success">عرض</button>
+                            <button class="btn btn-success btn-sm">عرض</button>
                         </a>
+                        <button class="btn btn-danger btn-sm delete-category" data-id="{{ $all->id }}" data-name="{{ $all->name }}">حذف</button>
                     </td>
                     <td style="font-size: 20px; border: 2px solid black;">{{ $all['name'] }}</td>
                 </tr>
@@ -54,4 +55,34 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-category');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                
+                if (confirm(`هل أنت متأكد من حذف الفئة "${name}"؟ سيؤدي ذلك لحذف كل الموظفين التابعين لها.`)) {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('DELETE', `/destroy-category/${id}`, true);
+                    xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                    
+                    xhr.onload = function() {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            location.reload();
+                        } else {
+                            alert('حدث خطأ أثناء الحذف.');
+                        }
+                    };
+                    
+                    xhr.send();
+                }
+            });
+        });
+    });
+</script>
 @endsection

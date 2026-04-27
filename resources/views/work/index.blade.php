@@ -60,11 +60,7 @@
                                                 <button class="btn btn-success btn-sm">تعديل</button>
                                             </a>
                                             
-                                            <form action="{{ route('destroy', [$craftsmen->id]) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm">حذف</button>
-                                            </form>
+                                            <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $craftsmen->id }}" data-name="{{ $craftsmen->name }}">حذف</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -79,4 +75,34 @@
         </div>
     </div>
     </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                
+                if (confirm(`هل أنت متأكد من حذف الموظف "${name}"؟`)) {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('DELETE', `/destroy/${id}`, true);
+                    xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                    
+                    xhr.onload = function() {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            location.reload();
+                        } else {
+                            alert('حدث خطأ أثناء الحذف.');
+                        }
+                    };
+                    
+                    xhr.send();
+                }
+            });
+        });
+    });
+</script>
 @endsection
