@@ -114,6 +114,14 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <div id="progressContainer" class="d-none mt-3">
+        <div class="progress">
+            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0%</div>
+        </div>
+        <p class="text-center mt-2" id="progressStatus">جاري معالجة الصور...</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             flatpickr("#startDate", {
@@ -123,14 +131,95 @@
 
             const form = document.querySelector('form');
             const btn = document.getElementById('submitBtn');
-            const loader = document.getElementById('loader');
-            const btnText = document.getElementById('btnText');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressStatus = document.getElementById('progressStatus');
 
-            form.addEventListener('submit', function() {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
                 btn.disabled = true;
-                loader.classList.remove('d-none');
-                btnText.innerText = 'جاري الحفظ...';
+                progressContainer.classList.remove('d-none');
+                
+                const formData = new FormData(form);
+                const imageInputs = ['image', 'imageA', 'imageB'];
+                
+                for (const inputName of imageInputs) {
+                    const fileInput = document.getElementById(inputName);
+                    if (fileInput && fileInput.files[0]) {
+                        progressStatus.innerText = `جاري ضغط صورة ${inputName}...`;
+                        const compressedBlob = await compressImage(fileInput.files[0]);
+                        formData.set(inputName, compressedBlob, fileInput.files[0].name);
+                    }
+                }
+
+                progressStatus.innerText = 'جاري الرفع...';
+                
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', form.action, true);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = percent + '%';
+                        progressBar.innerText = percent + '%';
+                    }
+                };
+
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        window.location.href = "{{ route('index') }}";
+                    } else {
+                        btn.disabled = false;
+                        progressContainer.classList.add('d-none');
+                        alert('حدث خطأ أثناء الحفظ. يرجى التأكد من البيانات.');
+                    }
+                };
+
+                xhr.send(formData);
             });
+
+            async function compressImage(file) {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.src = event.target.result;
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
+                            
+                            // Max dimensions
+                            const MAX_WIDTH = 1200;
+                            const MAX_HEIGHT = 1200;
+
+                            if (width > height) {
+                                if (width > MAX_WIDTH) {
+                                    height *= MAX_WIDTH / width;
+                                    width = MAX_WIDTH;
+                                }
+                            } else {
+                                if (height > MAX_HEIGHT) {
+                                    width *= MAX_HEIGHT / height;
+                                    height = MAX_HEIGHT;
+                                }
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+                            
+                            canvas.toBlob((blob) => {
+                                resolve(blob);
+                            }, 'image/jpeg', 0.7); // 70% quality
+                        };
+                    };
+                });
+            }
         });
     </script>
     @endsection
