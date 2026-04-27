@@ -39,7 +39,11 @@
         
                 <div class="col-md-6 mb-3">
                     <label for="governorate" class="form-label">المحافظة</label>
-                    <input type="text" class="form-control" id="governorate" name="governorate" value="{{ $customer->governorate }}" required>
+                    <select class="form-select" id="governorate" name="governorate" required>
+                        @foreach($governorates as $gov)
+                            <option value="{{ $gov->name }}" {{ $customer->governorate == $gov->name ? 'selected' : '' }}>{{ $gov->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
         
                 <div class="col-md-6 mb-3">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Governorate;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -17,7 +18,8 @@ class CustomerController extends Controller
     // ______________________________________________________________________________________________________
     public function create()
     {
-        return view('customers.create');  
+        $governorates = Governorate::all();
+        return view('customers.create', compact('governorates'));  
     }
 
     //____________________________________________________________________________________________________
@@ -65,7 +67,8 @@ class CustomerController extends Controller
             return redirect()->route('customers.index')->with('error', 'Customer not found');
         }
 
-        return view('customers.edit', compact('customer'));  // عرض صفحة التعديل
+        $governorates = Governorate::all();
+        return view('customers.edit', compact('customer', 'governorates'));  // عرض صفحة التعديل
     }
 
 
