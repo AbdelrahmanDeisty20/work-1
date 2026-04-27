@@ -127,7 +127,10 @@
             </div>
 
             <div class="text-center mt-4">
-                <button type="submit" class="btn btn-success btn-lg px-5">حفظ التعديلات</button>
+                <button type="submit" class="btn btn-success btn-lg px-5" id="submitBtn">
+                    <span class="spinner-border spinner-border-sm d-none" id="loader" role="status" aria-hidden="true"></span>
+                    <span id="btnText">حفظ التعديلات</span>
+                </button>
             </div>
         </div>
     </form>
@@ -138,6 +141,17 @@
     document.addEventListener('DOMContentLoaded', function() {
         flatpickr("#startDate", {
             dateFormat: "Y-m-d"
+        });
+
+        const form = document.querySelector('form');
+        const btn = document.getElementById('submitBtn');
+        const loader = document.getElementById('loader');
+        const btnText = document.getElementById('btnText');
+
+        form.addEventListener('submit', function() {
+            btn.disabled = true;
+            loader.classList.remove('d-none');
+            btnText.innerText = 'جاري الحفظ...';
         });
     });
 </script>
