@@ -31,6 +31,7 @@ class updateCraftsmen extends FormRequest
             'category_id'=>'nullable|exists:categories,id',
             'NationalNumber'=>'nullable|integer',
             'city'=>'nullable|string',
+            'subscription_status' => 'nullable|string',
         ];
     }
 }

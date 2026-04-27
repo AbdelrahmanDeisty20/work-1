@@ -15,6 +15,12 @@
         <p class="text-muted text-center">لا يوجد اشتراك حالي.</p>
     @endif
 
+    <div class="text-center mb-4">
+        <span class="badge {{ $craftsman->subscription_status == 'مشترك' ? 'bg-success' : 'bg-danger' }} fs-5">
+            حالة الاشتراك: {{ $craftsman->subscription_status ?? 'غير محدد' }}
+        </span>
+    </div>
+
     <!-- كل الاشتراكات -->
     <h3 class="mt-5 text-center">كل الاشتراكات:</h3>
     <ul class="list-group">

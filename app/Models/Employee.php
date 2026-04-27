@@ -19,8 +19,7 @@ class Employee extends Model
         'city',
         'category_id',
         'NationalNumber',
-
-    
+        'subscription_status',
     ];
 
     public function category()

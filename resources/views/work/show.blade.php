@@ -56,6 +56,14 @@
                         <td>{{ $craftsman->NationalNumber }}</td>
                         <td>رقم الهوية</td>
                     </tr>
+                    <tr style="background-color: #e2e2ee87; color: #333; font-weight: bold; border: 2px solid #4f507a;font-size:large" dir="rtl">
+                        <td>
+                            <span class="badge {{ $craftsman->subscription_status == 'مشترك' ? 'bg-success' : 'bg-danger' }}">
+                                {{ $craftsman->subscription_status ?? 'غير مشترك' }}
+                            </span>
+                        </td>
+                        <td>حالة الاشتراك</td>
+                    </tr>
                 </tbody>
             </table>
         </div>

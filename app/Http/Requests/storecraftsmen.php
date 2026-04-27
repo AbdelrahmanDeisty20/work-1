@@ -32,6 +32,7 @@ class storecraftsmen extends FormRequest
             'NationalNumber' => ['required', 'digits:14', 'numeric'],
             'city' => 'required|string',
             'startDate'=> 'required|date_format:Y-m-d',
+            'subscription_status' => 'nullable|string',
         ];
     }
 }
