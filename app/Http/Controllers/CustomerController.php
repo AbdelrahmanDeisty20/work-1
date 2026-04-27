@@ -37,7 +37,10 @@ class CustomerController extends Controller
 
         Customer::create($validatedData);
 
-        
+        if (request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'تم إضافة العميل بنجاح.']);
+        }
+
         return redirect()->route('customers.index');
     }
 //____________________________________________________________________________________________________
@@ -87,6 +90,10 @@ class CustomerController extends Controller
 
         $customer->update($validatedData);
 
+        if (request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'تم تحديث بيانات العميل بنجاح.']);
+        }
+
         return redirect()->route('customers.index');
     }
 //_________________________________________________________________________________________________________________________
@@ -99,6 +106,10 @@ class CustomerController extends Controller
         }
 
         $customer->delete();
+
+        if (request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'تم حذف العميل بنجاح.']);
+        }
 
         return redirect()->route('customers.index');
     }
