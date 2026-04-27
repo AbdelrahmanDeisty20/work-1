@@ -146,11 +146,12 @@ class CraftsmenController extends Controller
     public function destroy(string $id)
     {
         $craftsman = Employee::findOrFail($id);
-
-        // حذف السجلات المرتبطة يدويًا
         $craftsman->dates()->delete();
-
         $craftsman->delete();
+
+        if (request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'تم حذف الموظف بنجاح.']);
+        }
 
         return redirect()->route('index')->with('success', 'تم حذف الموظف بنجاح.');
     }

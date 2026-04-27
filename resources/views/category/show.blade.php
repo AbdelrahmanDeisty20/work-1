@@ -47,15 +47,11 @@
                                 <a href="{{ route('edit_cr', [$employee->id]) }}" style="text-decoration: none; margin: 0;">
                                     <button class="btn btn-success btn-sm" style="margin: 0; padding: 5px 10px;">تعديل</button>
                                 </a>
-                                <form action="{{ route('destroy_cr', [$employee->id]) }}" method="POST" style="display: inline-block; margin: 0;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" style="margin: 0; padding: 5px 10px;">حذف</button>
-                                </form>
+                                <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $employee->id }}" data-name="{{ $employee->name }}">حذف</button>
                             </td>
                             <td class="text-center" style="padding: 10px;">{{ $employee->phone }}</td>
-                            {{-- <td class="text-center" style="padding: 10px;">{{ $employee['EndDate'] }}</td>
-                            <td class="text-center" style="padding: 10px;">{{ $employee['startDate'] }}</td> --}}
+                            <td class="text-center" style="padding: 10px;">{{ $employee->dates()->first() ? $employee->dates()->first()->endDate : '---' }}</td>
+                            <td class="text-center" style="padding: 10px;">{{ $employee->dates()->first() ? $employee->dates()->first()->startDate : '---' }}</td>
                             <td class="text-center" style="padding: 10px;">{{ $category->name }}</td>
                             <td class="text-center" style="padding: 10px;">{{ $employee->name }}</td>
                         </tr>
@@ -65,5 +61,35 @@
         @endif
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                
+                if (confirm(`هل أنت متأكد من حذف الموظف "${name}"؟`)) {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('DELETE', `/destroy-cr/${id}`, true);
+                    xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                    
+                    xhr.onload = function() {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            location.reload();
+                        } else {
+                            alert('حدث خطأ أثناء الحفظ.');
+                        }
+                    };
+                    
+                    xhr.send();
+                }
+            });
+        });
+    });
+</script>
 
 @endsection

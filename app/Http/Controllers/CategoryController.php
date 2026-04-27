@@ -166,18 +166,27 @@ public function edit_cr(string $id)
 
 
 //_______________________________________________________________________________________________________________
-public function destroy_cr(string $id)
-{
-    $craftsman = Employee::findOrFail($id);
-    $craftsman->delete();
-    return back();//show 
-   
-    
-}
+    public function destroy_cr(string $id)
+    {
+        $craftsman = Employee::findOrFail($id);
+        $craftsman->dates()->delete();
+        $craftsman->delete();
+
+        if (request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'تم الحذف بنجاح.']);
+        }
+
+        return back();
+    }
     public function destroy(string $id)
     {
         $category = Category::findOrFail($id);
         $category->delete();
+
+        if (request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'تم حذف الفئة بنجاح.']);
+        }
+
         return redirect()->route('index_category')->with('success', 'تم حذف الفئة بنجاح.');
     }
 }
