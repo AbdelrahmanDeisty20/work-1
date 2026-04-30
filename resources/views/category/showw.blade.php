@@ -62,7 +62,8 @@
     
             <div class="mb-3">
                 <label for="NationalNumber" class="form-label fs-3 fw-bold">الرقم القومي</label>
-                <input type="text" class="form-control text-end " id="NationalNumber" name="NationalNumber" placeholder="أدخل الرقم القومي" required>
+                <input type="text" class="form-control text-end " id="NationalNumber" name="NationalNumber" placeholder="أدخل الرقم القومي" required maxlength="14" value="{{ old('NationalNumber') }}">
+                @error('NationalNumber') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
     
             <div class="mb-3">
@@ -159,6 +160,15 @@
                 xhr.onload = function() {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         window.location.href = "{{ route('category.show', ['id' => $Categories->id]) }}";
+                    } else if (xhr.status === 422) {
+                        btn.disabled = false;
+                        progressContainer.classList.add('d-none');
+                        const response = JSON.parse(xhr.responseText);
+                        let errorMsg = 'يرجى التأكد من البيانات:\n';
+                        for (let field in response.errors) {
+                            errorMsg += `- ${response.errors[field][0]}\n`;
+                        }
+                        alert(errorMsg);
                     } else {
                         btn.disabled = false;
                         progressContainer.classList.add('d-none');

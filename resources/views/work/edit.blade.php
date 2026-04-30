@@ -78,7 +78,8 @@
         
                 <div class="col-md-6 mb-3">
                     <label for="NationalNumber" class="form-label">الرقم القومي</label>
-                    <input type="text" class="form-control" id="NationalNumber" name="NationalNumber" placeholder="أدخل 14 رقم" value="{{ $craftsman->NationalNumber }}" required maxlength="14">
+                    <input type="text" class="form-control" id="NationalNumber" name="NationalNumber" placeholder="أدخل 14 رقم" value="{{ old('NationalNumber', $craftsman->NationalNumber) }}" required maxlength="14">
+                    @error('NationalNumber') <div class="text-danger">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -191,6 +192,15 @@
             xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     window.location.href = "{{ route('index') }}";
+                } else if (xhr.status === 422) {
+                    btn.disabled = false;
+                    progressContainer.classList.add('d-none');
+                    const response = JSON.parse(xhr.responseText);
+                    let errorMsg = 'يرجى التأكد من البيانات:\n';
+                    for (let field in response.errors) {
+                        errorMsg += `- ${response.errors[field][0]}\n`;
+                    }
+                    alert(errorMsg);
                 } else {
                     btn.disabled = false;
                     progressContainer.classList.add('d-none');

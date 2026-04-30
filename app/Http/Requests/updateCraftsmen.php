@@ -29,9 +29,17 @@ class updateCraftsmen extends FormRequest
             'phone'=>'nullable|integer',
             'governorates_id'=>'nullable|exists:governorates,id',
             'category_id'=>'nullable|exists:categories,id',
-            'NationalNumber'=>'nullable|integer',
+            'NationalNumber' => ['nullable', 'digits:14', 'numeric'],
             'city'=>'nullable|string',
             'subscription_status' => 'nullable|string',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'NationalNumber.digits' => 'الرقم القومي يجب أن يكون 14 رقماً بالضبط.',
+            'NationalNumber.numeric' => 'الرقم القومي يجب أن يحتوي على أرقام فقط.',
         ];
     }
 }

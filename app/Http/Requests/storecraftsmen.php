@@ -35,4 +35,13 @@ class storecraftsmen extends FormRequest
             'subscription_status' => 'nullable|string',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'NationalNumber.required' => 'يجب إدخال الرقم القومي.',
+            'NationalNumber.digits' => 'الرقم القومي يجب أن يكون 14 رقماً بالضبط.',
+            'NationalNumber.numeric' => 'الرقم القومي يجب أن يحتوي على أرقام فقط.',
+        ];
+    }
 }
