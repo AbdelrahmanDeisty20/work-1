@@ -23,9 +23,9 @@ class storecraftsmen extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'imageA' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'imageB' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|max:2048',
+            'imageA' => 'nullable|image|max:2048',
+            'imageB' => 'nullable|image|max:2048',
             'phone' => 'required|string',
             'governorates_id' => 'required|exists:governorates,id',
             'category_id' => 'required|exists:categories,id',
@@ -39,9 +39,25 @@ class storecraftsmen extends FormRequest
     public function messages(): array
     {
         return [
+            'name.required' => 'يرجى إدخال اسم صاحب الحرفة.',
+            'name.string' => 'الاسم يجب أن يكون نصاً.',
+            'phone.required' => 'يرجى إدخال رقم الهاتف.',
+            'governorates_id.required' => 'يرجى اختيار المحافظة.',
+            'governorates_id.exists' => 'المحافظة المختارة غير موجودة.',
+            'category_id.required' => 'يرجى اختيار الفئة.',
+            'category_id.exists' => 'الفئة المختارة غير موجودة.',
             'NationalNumber.required' => 'يجب إدخال الرقم القومي.',
             'NationalNumber.digits' => 'الرقم القومي يجب أن يكون 14 رقماً بالضبط.',
             'NationalNumber.numeric' => 'الرقم القومي يجب أن يحتوي على أرقام فقط.',
+            'city.required' => 'يرجى إدخال المدينة.',
+            'startDate.required' => 'يرجى إدخال تاريخ الاشتراك.',
+            'startDate.date_format' => 'تنسيق التاريخ غير صحيح.',
+            'image.image' => 'الملف يجب أن يكون صورة.',
+            'image.max' => 'حجم الصورة لا يجب أن يتجاوز 2 ميجابايت.',
+            'imageA.image' => 'الملف يجب أن يكون صورة.',
+            'imageA.max' => 'حجم الصورة لا يجب أن يتجاوز 2 ميجابايت.',
+            'imageB.image' => 'الملف يجب أن يكون صورة.',
+            'imageB.max' => 'حجم الصورة لا يجب أن يتجاوز 2 ميجابايت.',
         ];
     }
 }

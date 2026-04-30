@@ -23,15 +23,24 @@
                 @csrf
                 <div class="mb-3">
                     <label for="name" class="form-label">الاسم</label>
-                    <input type="text" class="form-control" id="name" name="name" placeholder="أدخل اسمك" value="{{ old('name') }}" >
+                    <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="أدخل اسمك" value="{{ old('name') }}" >
+                    @error('name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div  class="mb-3">
                     <label for="email" class="form-label">البريد الإلكتروني</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="أدخل بريدك الإلكتروني" value="{{ old('email') }}" >
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="أدخل بريدك الإلكتروني" value="{{ old('email') }}" >
+                    @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">كلمة المرور</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="أدخل كلمة المرور" >
+                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="أدخل كلمة المرور" >
+                    @error('password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
                 <button type="submit" class="btn btn-primary w-100">إنشاء حساب</button>
             </form> 

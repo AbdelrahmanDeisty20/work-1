@@ -23,9 +23,9 @@ class updateCraftsmen extends FormRequest
     {
         return [
             'name'=>'nullable|string',
-            'image'=>'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'imageA' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'imageB' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image'=>'nullable|image|max:2048',
+            'imageA' => 'nullable|image|max:2048',
+            'imageB' => 'nullable|image|max:2048',
             'phone'=>'nullable|integer',
             'governorates_id'=>'nullable|exists:governorates,id',
             'category_id'=>'nullable|exists:categories,id',
@@ -38,8 +38,18 @@ class updateCraftsmen extends FormRequest
     public function messages(): array
     {
         return [
+            'name.string' => 'الاسم يجب أن يكون نصاً.',
+            'phone.integer' => 'رقم الهاتف يجب أن يكون أرقاماً.',
+            'governorates_id.exists' => 'المحافظة المختارة غير موجودة.',
+            'category_id.exists' => 'الفئة المختارة غير موجودة.',
             'NationalNumber.digits' => 'الرقم القومي يجب أن يكون 14 رقماً بالضبط.',
             'NationalNumber.numeric' => 'الرقم القومي يجب أن يحتوي على أرقام فقط.',
+            'image.image' => 'الملف يجب أن يكون صورة.',
+            'image.max' => 'حجم الصورة لا يجب أن يتجاوز 2 ميجابايت.',
+            'imageA.image' => 'الملف يجب أن يكون صورة.',
+            'imageA.max' => 'حجم الصورة لا يجب أن يتجاوز 2 ميجابايت.',
+            'imageB.image' => 'الملف يجب أن يكون صورة.',
+            'imageB.max' => 'حجم الصورة لا يجب أن يتجاوز 2 ميجابايت.',
         ];
     }
 }

@@ -20,9 +20,18 @@ class AuthController extends Controller
     public function registeruser(Request $request){
         
         $validatedData = $request->validate([
-            'name'=>'required|string',
-            'email' => 'required|email',
-            'password' => 'required',
+            'name'=>'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+        ], [
+            'name.required' => 'يجب إدخال الاسم.',
+            'name.string' => 'الاسم يجب أن يكون نصاً.',
+            'name.max' => 'الاسم لا يجب أن يتجاوز 255 حرفاً.',
+            'email.required' => 'يجب إدخال البريد الإلكتروني.',
+            'email.email' => 'يجب إدخال بريد إلكتروني صحيح.',
+            'email.unique' => 'هذا البريد الإلكتروني مسجل بالفعل.',
+            'password.required' => 'يجب إدخال كلمة المرور.',
+            'password.min' => 'كلمة المرور يجب ألا تقل عن 8 أحرف.',
         ]);
         
         $user= User::create([
@@ -30,7 +39,7 @@ class AuthController extends Controller
             'email'=>$validatedData['email'],
             'password'=>Hash::make($validatedData['password'])
         ]);
-        return view('work.login');
+        return redirect()->route('login')->with('success', 'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.');
     }
 
     //__________________________________________________________________________________________________________
@@ -43,6 +52,10 @@ class AuthController extends Controller
         $validatedData = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+        ], [
+            'email.required' => 'يجب إدخال البريد الإلكتروني.',
+            'email.email' => 'يجب إدخال بريد إلكتروني صحيح.',
+            'password.required' => 'يجب إدخال كلمة المرور.',
         ]);
         $user = User::where('email', $validatedData['email'])->first();
         

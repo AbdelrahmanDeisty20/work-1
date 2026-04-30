@@ -33,9 +33,11 @@ public function create(){
 //________________________________________________________________________________________________________________
 
 public function store(request $request){
-    $validatedDta=$request->validate([
-    
-    'name'=>'required|string',
+    $validatedDta = $request->validate([
+        'name' => 'required|string',
+    ], [
+        'name.required' => 'يرجى إدخال اسم الفئة.',
+        'name.string' => 'اسم الفئة يجب أن يكون نصاً.',
     ]);
     $category=Category::create([
     'name'=>$validatedDta['name'],
@@ -56,8 +58,11 @@ public function edit(string $id){
 //_________________________________________________________________________________________________________
 public function update(request $request , string $id){
 
-    $validatedData=$request->validate([
-        'name'=>'required|string',
+    $validatedData = $request->validate([
+        'name' => 'required|string',
+    ], [
+        'name.required' => 'يرجى إدخال اسم الفئة.',
+        'name.string' => 'اسم الفئة يجب أن يكون نصاً.',
     ]);
 
     $category=Category::find($id);
