@@ -67,7 +67,7 @@
         <a href="{{ route('show-Craftsmen', [$craftsman->id]) }}" class="btn btn-dark rounded-circle shadow">
             <i class="fa-solid fa-arrow-right"></i>
         </a>
-        <h2 class="fw-bold mb-0">سجل الاشتراكات</h2>
+        <h2 class="fw-bold mb-0">سجل </h2>
         <div style="width: 40px;"></div>
     </div>
 
@@ -144,4 +144,4 @@
         <a href="{{ route('show-Craftsmen', [$craftsman->id]) }}" class="btn btn-outline-secondary px-5">العودة لملف الموظف</a>
     </div>
 </div>
-@endsection
+@endsection
