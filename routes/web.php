@@ -37,8 +37,8 @@ Route::group(['middleware' => ['auth', AuthCheck::class]], function () {
     Route::get('/edit/{id}', [CraftsmenController::class, 'edit'])->name('edit');
     Route::put('/update/{id}', [CraftsmenController::class, 'update'])->name('update');
     Route::delete('/destroy/{id}', [CraftsmenController::class, 'destroy'])->name('destroy');
-});
-// category//____________________________________________________________________________________________________________
+
+    // category//____________________________________________________________________________________________________________
 Route::get('/categoty', [CategoryController::class, 'index'])->name('index_category');
 Route::get('/show-category/{id}', [CategoryController::class, 'show'])->name('category.show');
 Route::get('/create-category', [CategoryController::class, 'create'])->name('create_category');
@@ -74,3 +74,4 @@ Route::get('customers/{id}/edit', [CustomerController::class, 'edit'])->name('cu
 Route::put('customers/{id}', [CustomerController::class, 'update'])->name('customers.update');
 Route::delete('customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 // _______________________________________________________________________________________________________________________
+});
