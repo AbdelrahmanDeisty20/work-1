@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AuthCheck;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CraftsmenController;
 use App\Http\Controllers\AuthController;
@@ -27,7 +28,7 @@ Route::get('/',                [AuthController::class,'login'])->name('login');
 Route::post('/login',                [AuthController::class,'loginuser'])->name('loginuser');
 
 //all about craftsmens//___________________________________________________________________________________________________________
-Route::group(['middleware'=> ['auth']], function () {
+Route::group(['middleware'=> ['auth',AuthCheck::class]], function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/craftsmens',      [CraftsmenController::class,'index'])   ->name('index');
 Route::post('/store',          [CraftsmenController::class,'store'])   ->name('store');
