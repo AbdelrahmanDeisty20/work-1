@@ -29,7 +29,7 @@ class storecraftsmen extends FormRequest
             'phone' => 'required|string',
             'governorates_id' => 'required|exists:governorates,id',
             'category_id' => 'required|exists:categories,id',
-            'NationalNumber' => ['required', 'digits:14', 'numeric'],
+            'NationalNumber' => ['nullable', 'digits:14', 'numeric'],
             'city' => 'required|string',
             'startDate'=> 'required|date_format:Y-m-d',
             'subscription_status' => 'nullable|string',

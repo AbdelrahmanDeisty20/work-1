@@ -65,7 +65,7 @@
             
                     <div class="col-md-6 mb-3">
                         <label for="NationalNumber" class="form-label">الرقم القومي</label>
-                        <input type="text" class="form-control" id="NationalNumber" name="NationalNumber" placeholder="أدخل 14 رقم" required maxlength="14" value="{{ old('NationalNumber') }}">
+                        <input type="text" class="form-control" id="NationalNumber" name="NationalNumber" placeholder="أدخل 14 رقم"  maxlength="14" value="{{ old('NationalNumber') }}">
                         @error('NationalNumber') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
 
